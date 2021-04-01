@@ -1,7 +1,16 @@
 import React from 'react';
+import { useHistory } from 'react-router';
 
 const Home = () => {
-  return <div>Hello</div>;
+  const history = useHistory();
+
+  return (
+    <div>
+      <button type="button" onClick={() => history.push('/login')}>
+        Login
+      </button>
+    </div>
+  );
 };
 
 export default Home;
