@@ -3,9 +3,9 @@ import { CheckCircleIcon } from '@chakra-ui/icons';
 import { Box, Flex, Heading, HStack, Stack, Text } from '@chakra-ui/layout';
 import { Input, Tag } from '@chakra-ui/react';
 import React from 'react';
+import { useQuery } from 'react-query';
 import { Link } from 'react-router-dom';
-
-type TaskStatus = 'OPEN' | 'DONE' | 'IN_PROGRESS';
+import { TaskType } from '../types';
 
 const Home = () => {
   const Head = () => (
@@ -63,7 +63,7 @@ const Home = () => {
     );
   };
 
-  const TasksList = () => (
+  const TasksList = ({ tasks }: { tasks: TaskType[] | undefined }) => (
     <Flex mt={10} flexDir="column">
       <Text
         px={3}
@@ -77,17 +77,28 @@ const Home = () => {
       </Text>
 
       <Box>
-        <TaskItem title="Task 1" status="OPEN" />
-        <TaskItem title="Task 2" status="DONE" />
-        <TaskItem title="Task 3" status="IN_PROGRESS" />
+        {tasks?.map((task) => (
+          <TaskItem key={task.id} title={task.title} status={task.status} />
+        ))}
       </Box>
     </Flex>
   );
 
+  const { status, data, error } = useQuery<TaskType[]>('/tasks');
+
+  if (status === 'error')
+    return (
+      <div className="">
+        <p>Error : {error.message}</p>
+        <Link to="/login">Login</Link>
+      </div>
+    );
+  if (status === 'loading') return <h1>Loading...</h1>;
+
   return (
     <Flex minH="100vh" flexDir="column" pt={5}>
       <Head />
-      <TasksList />
+      <TasksList tasks={data} />
       <Input
         rounded="none"
         mt="auto"

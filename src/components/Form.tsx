@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import {
   Button,
@@ -8,21 +9,72 @@ import {
   InputGroup,
   InputRightElement,
   Spacer,
+  useToast,
 } from '@chakra-ui/react';
+import axios from 'axios';
 import React, { FormEvent, useState } from 'react';
+import { useHistory } from 'react-router';
+import { useAuth } from '../context/auth';
 
 type Props = {
   event: 'LOGIN' | 'REGISTER';
 };
 
-const Form: React.FC<Props> = () => {
+const Form: React.FC<Props> = ({ event }) => {
+  const {
+    dispatch,
+    state: { loading },
+  } = useAuth();
+  const toast = useToast();
+  const history = useHistory();
   const [show, setShow] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const handleClick = () => setShow(!show);
 
-  const submitHandler = (e: FormEvent) => {
+  const submitHandler = async (e: FormEvent) => {
     e.preventDefault();
+    try {
+      if (event === 'LOGIN') {
+        dispatch({ type: 'SET_LOADING' });
+        const res = await axios.post('/auth/signin', { username, password });
+        localStorage.setItem('accessToken', res.data.accessToken);
+        dispatch({ type: 'LOGIN' });
+        toast({
+          status: 'success',
+          title: 'Login up successful',
+        });
+        history.push('/');
+      } else {
+        dispatch({ type: 'SET_LOADING' });
+        const res = await axios.post('/auth/signup', { username, password });
+        if (res.status === 201) {
+          dispatch({ type: 'REGISTER' });
+          toast({
+            status: 'success',
+            title: 'Sign up successful, please login',
+          });
+          history.push('/login');
+        }
+      }
+    } catch (err) {
+      dispatch({ type: 'SET_LOADING' });
+      if (typeof err.response.data.message === 'string') {
+        toast({
+          title: err.response.data.message,
+          status: 'error',
+          isClosable: true,
+        });
+      } else {
+        err.response.data.message.forEach((message: string) =>
+          toast({
+            title: message,
+            status: 'error',
+            isClosable: true,
+          })
+        );
+      }
+    }
   };
 
   return (
@@ -60,7 +112,7 @@ const Form: React.FC<Props> = () => {
       <Spacer h="3" />
       <Button
         type="submit"
-        // isLoading
+        isLoading={loading}
         loadingText="Submitting"
         variant="outline"
       >
