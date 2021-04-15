@@ -1,21 +1,43 @@
 /* eslint-disable react/prop-types */
 import { CheckCircleIcon } from '@chakra-ui/icons';
-import { Flex, HStack, Text } from '@chakra-ui/layout';
-import { Tag } from '@chakra-ui/react';
+import { HStack, Text } from '@chakra-ui/layout';
+import { chakra, HTMLChakraProps, Tag } from '@chakra-ui/react';
+import { HTMLMotionProps, motion, PanInfo } from 'framer-motion';
 import React from 'react';
+import { useTask } from '../context/tasks';
 import { TaskStatus } from '../types';
 
 type Props = {
   title: string;
   status: TaskStatus;
+  id: number;
 };
 
-const TaskItem: React.FC<Props> = ({ status, title }) => {
+type Merge<P, T> = Omit<P, keyof T> & T;
+type MotionBoxProps = Merge<HTMLChakraProps<'div'>, HTMLMotionProps<'div'>>;
+export const MotionFlex: React.FC<MotionBoxProps> = motion(chakra.div);
+
+const TaskItem: React.FC<Props> = ({ id, status, title }) => {
+  const { updateTaskStatus } = useTask();
+
+  const dragAction = (_, { offset }: PanInfo) => {
+    if (offset.x < 0) {
+      updateTaskStatus(id, 'IN_PROGRESS');
+    } else {
+      updateTaskStatus(id, 'DONE');
+    }
+  };
+
   return (
-    <Flex
+    <MotionFlex
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      onDragEnd={dragAction}
+      dragTransition={{ bounceStiffness: 300, bounceDamping: 15 }}
       bgGradient="linear-gradient(to-r, #262529, #353339)"
-      justify="space-between"
-      align="center"
+      justifyContent="space-between"
+      alignItems="center"
+      display="flex"
       h={14}
       _notLast={{ mb: 2 }}
       px={3}
@@ -39,7 +61,7 @@ const TaskItem: React.FC<Props> = ({ status, title }) => {
       >
         {status}
       </Tag>
-    </Flex>
+    </MotionFlex>
   );
 };
 

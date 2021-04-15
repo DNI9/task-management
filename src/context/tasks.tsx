@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { createContext, useContext, useReducer } from 'react';
-import { TaskType } from '../types';
+import { TaskStatus, TaskType } from '../types';
 
 axios.interceptors.request.use((config) => {
   if (config.url?.includes('/tasks')) {
@@ -11,7 +11,7 @@ axios.interceptors.request.use((config) => {
 
 export type TaskActionTypes =
   | 'CREATE_TASK'
-  | 'UPDATE_TASK'
+  | 'UPDATE_TASK_STATUS'
   | 'DELETE_TASK'
   | 'GET_TASKS'
   | 'SET_SEARCH_RESULTS'
@@ -42,6 +42,7 @@ type ContextType = {
   getTasks: () => Promise<void>;
   searchTasks: (data: { search: string; status: string }) => Promise<void>;
   createTask: (data: { title: string; description: string }) => Promise<void>;
+  updateTaskStatus: (id: number, status: TaskStatus) => Promise<void>;
 };
 
 const TaskStateContext = createContext<ContextType | undefined>(undefined);
@@ -56,6 +57,15 @@ const reducer = (state: State, { type, payload }: Action) => {
     }
     case 'SET_SEARCH_RESULTS': {
       return { ...state, loading: false, searchResults: payload };
+    }
+    case 'UPDATE_TASK_STATUS': {
+      return {
+        ...state,
+        loading: false,
+        tasks: state.tasks.map((task) =>
+          task.id === payload.id ? payload : task
+        ),
+      };
     }
     case 'REMOVE_SEARCH_RESULTS': {
       return { ...state, loading: false, searchResults: null };
@@ -113,6 +123,15 @@ function TaskProvider({ children }: TaskProviderProps) {
     }
   }
 
+  async function updateTaskStatus(id: number, status: TaskStatus) {
+    try {
+      const { data } = await axios.patch(`/tasks/${id}/status`, { status });
+      dispatch({ type: 'UPDATE_TASK_STATUS', payload: data });
+    } catch (error) {
+      //
+    }
+  }
+
   const value = {
     state,
     dispatch,
@@ -120,6 +139,7 @@ function TaskProvider({ children }: TaskProviderProps) {
     getTasks,
     searchTasks,
     createTask,
+    updateTaskStatus,
   };
   return (
     <TaskStateContext.Provider value={value}>
