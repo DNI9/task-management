@@ -17,7 +17,7 @@ import {
   Spinner,
   useDisclosure,
 } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import TasksList from '../components/TaskList';
 import { useTask } from '../context/tasks';
@@ -28,7 +28,12 @@ const Home = () => {
   const [description, setDescription] = useState('');
   const {
     state: { tasks, loading },
+    getTasks,
   } = useTask();
+
+  useEffect(() => {
+    getTasks();
+  }, []);
 
   const Head = () => (
     <Flex mx={3} justify="space-between">

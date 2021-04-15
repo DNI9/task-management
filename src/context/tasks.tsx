@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { createContext, useContext, useEffect, useReducer } from 'react';
+import React, { createContext, useContext, useReducer } from 'react';
 import { TaskType } from '../types';
 
 axios.interceptors.request.use((config) => {
@@ -74,10 +74,6 @@ function TaskProvider({ children }: TaskProviderProps) {
       console.error(err.message);
     }
   }
-
-  useEffect(() => {
-    getTasks();
-  }, []);
 
   const value = { state, dispatch, addErrorToState, getTasks };
   return (
