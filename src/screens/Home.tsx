@@ -73,6 +73,7 @@ const Home = () => {
         onClick={() => {
           setOpenSearchBar(!openSearchBar);
           dispatch({ type: 'REMOVE_SEARCH_RESULTS' });
+          setSearch('');
         }}
         ml="auto"
         mr={3}
