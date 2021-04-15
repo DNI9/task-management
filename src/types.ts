@@ -2,7 +2,7 @@ export enum QueryType {
   FETCH_TASKS = 'FETCH_TASKS',
 }
 
-type TaskStatus = 'OPEN' | 'DONE' | 'IN_PROGRESS';
+export type TaskStatus = 'OPEN' | 'DONE' | 'IN_PROGRESS';
 
 export type TaskType = {
   id: number;

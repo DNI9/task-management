@@ -42,7 +42,7 @@ const Form: React.FC<Props> = ({ event }) => {
         dispatch({ type: 'LOGIN' });
         toast({
           status: 'success',
-          title: 'Login up successful',
+          title: 'Login successful',
         });
         history.push('/');
       } else {

@@ -1,13 +1,35 @@
 import { Avatar } from '@chakra-ui/avatar';
-import { CheckCircleIcon } from '@chakra-ui/icons';
-import { Box, Flex, Heading, HStack, Stack, Text } from '@chakra-ui/layout';
-import { Input, Tag } from '@chakra-ui/react';
-import React from 'react';
-import { useQuery } from 'react-query';
+import { AddIcon } from '@chakra-ui/icons';
+import { Center, Flex, Heading, Stack } from '@chakra-ui/layout';
+import {
+  Button,
+  FormControl,
+  FormLabel,
+  IconButton,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Spinner,
+  useDisclosure,
+} from '@chakra-ui/react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { TaskType } from '../types';
+import TasksList from '../components/TaskList';
+import { useTask } from '../context/tasks';
 
 const Home = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const {
+    state: { tasks, loading },
+  } = useTask();
+
   const Head = () => (
     <Flex mx={3} justify="space-between">
       <Stack spacing={0}>
@@ -24,90 +46,62 @@ const Home = () => {
     </Flex>
   );
 
-  const TaskItem = ({
-    title,
-    status,
-  }: {
-    title: string;
-    status: TaskStatus;
-  }) => {
+  if (loading)
     return (
-      <Flex
-        bgGradient="linear-gradient(to-r, #262529, #353339)"
-        justify="space-between"
-        align="center"
-        h="14"
-        _notLast={{ mb: 2 }}
-        px={3}
-        mx={3}
-        cursor="pointer"
-      >
-        <HStack maxW="67%">
-          <CheckCircleIcon />
-          <Text isTruncated>{title}</Text>
-        </HStack>
-        <Tag
-          size="sm"
-          variant="subtle"
-          colorScheme={
-            // eslint-disable-next-line no-nested-ternary
-            status === 'OPEN' ? 'blue' : status === 'DONE' ? 'green' : 'yellow'
-          }
-          fontWeight="medium"
-          letterSpacing={1}
-          rounded="none"
-        >
-          {status}
-        </Tag>
-      </Flex>
+      <Center minH="100vh">
+        <Spinner size="xl" />
+      </Center>
     );
-  };
-
-  const TasksList = ({ tasks }: { tasks: TaskType[] | undefined }) => (
-    <Flex mt={10} flexDir="column">
-      <Text
-        px={3}
-        opacity={0.8}
-        fontSize="md"
-        fontWeight="semibold"
-        letterSpacing={1}
-        mb={3}
-      >
-        My tasks
-      </Text>
-
-      <Box>
-        {tasks?.map((task) => (
-          <TaskItem key={task.id} title={task.title} status={task.status} />
-        ))}
-      </Box>
-    </Flex>
-  );
-
-  const { status, data, error } = useQuery<TaskType[]>('/tasks');
-
-  if (status === 'error')
-    return (
-      <div className="">
-        <p>Error : {error.message}</p>
-        <Link to="/login">Login</Link>
-      </div>
-    );
-  if (status === 'loading') return <h1>Loading...</h1>;
 
   return (
     <Flex minH="100vh" flexDir="column" pt={5}>
       <Head />
-      <TasksList tasks={data} />
-      <Input
-        rounded="none"
-        mt="auto"
-        variant="filled"
-        h="14"
-        placeholder="Add a new task &amp; press enter"
-        border="1px"
-        borderColor="whiteAlpha.300"
-      />
+      <TasksList tasks={tasks} />
+      <Center m="auto 1rem 1rem auto">
+        <IconButton
+          onClick={onOpen}
+          variant="solid"
+          colorScheme="facebook"
+          aria-label="Add new task"
+          rounded="full"
+          size="lg"
+          icon={<AddIcon />}
+        />
+      </Center>
+      <Modal size="sm" isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent bg="#262528">
+          <ModalHeader>Add a new task</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <FormControl>
+              <FormLabel>Title</FormLabel>
+              <Input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                autoFocus
+                placeholder="Add task name"
+              />
+            </FormControl>
+
+            <FormControl mt={4}>
+              <FormLabel>Description</FormLabel>
+              <Input
+                placeholder="Add task description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </FormControl>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3}>
+              Save
+            </Button>
+            <Button onClick={onClose}>Cancel</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Flex>
   );
 };
