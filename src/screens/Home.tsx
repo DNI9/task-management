@@ -86,13 +86,6 @@ const Home = () => {
     </Flex>
   );
 
-  // if (loading)
-  //   return (
-  //     <Center minH="100vh">
-  //       <Spinner size="xl" />
-  //     </Center>
-  //   );
-
   return (
     <Flex minH="100vh" flexDir="column" pt={5}>
       <Head />
@@ -124,7 +117,9 @@ const Home = () => {
           </form>
         </Box>
       </Collapse>
-      <TasksList tasks={searchResults ?? tasks} />
+
+      <TasksList loading={loading} tasks={searchResults ?? tasks} />
+
       <Box pos="fixed" bottom={3} right={3}>
         <IconButton
           onClick={onOpen}

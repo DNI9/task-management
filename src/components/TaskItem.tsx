@@ -16,7 +16,7 @@ const TaskItem: React.FC<Props> = ({ status, title }) => {
       bgGradient="linear-gradient(to-r, #262529, #353339)"
       justify="space-between"
       align="center"
-      h="14"
+      h={14}
       _notLast={{ mb: 2 }}
       px={3}
       mx={3}
