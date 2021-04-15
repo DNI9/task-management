@@ -3,7 +3,7 @@ import React, { createContext, useContext, useReducer } from 'react';
 import { TaskType } from '../types';
 
 axios.interceptors.request.use((config) => {
-  if (config.url === '/tasks') {
+  if (config.url?.includes('/tasks')) {
     config.headers.Authorization = `Bearer ${localStorage.accessToken}`;
   }
   return config;
@@ -14,6 +14,8 @@ export type TaskActionTypes =
   | 'UPDATE_TASK'
   | 'DELETE_TASK'
   | 'GET_TASKS'
+  | 'SET_SEARCH_RESULTS'
+  | 'REMOVE_SEARCH_RESULTS'
   | 'SET_ERROR'
   | 'CLEAR_ERROR';
 
@@ -27,7 +29,8 @@ type Dispatch = (action: Action) => void;
 type State = {
   tasks: TaskType[];
   loading: boolean;
-  errors: null;
+  errors: [string] | null;
+  searchResults: TaskType[] | null;
 };
 
 type TaskProviderProps = { children: React.ReactNode };
@@ -37,6 +40,7 @@ type ContextType = {
   dispatch: Dispatch;
   addErrorToState: (errors: string[]) => void;
   getTasks: () => Promise<void>;
+  searchTasks: (data: { search: string; status: string }) => Promise<void>;
 };
 
 const TaskStateContext = createContext<ContextType | undefined>(undefined);
@@ -44,11 +48,13 @@ const TaskStateContext = createContext<ContextType | undefined>(undefined);
 const reducer = (state: State, { type, payload }: Action) => {
   switch (type) {
     case 'GET_TASKS': {
-      return {
-        ...state,
-        loading: false,
-        tasks: payload,
-      };
+      return { ...state, loading: false, tasks: payload };
+    }
+    case 'SET_SEARCH_RESULTS': {
+      return { ...state, loading: false, searchResults: payload };
+    }
+    case 'REMOVE_SEARCH_RESULTS': {
+      return { ...state, loading: false, searchResults: null };
     }
 
     default:
@@ -61,6 +67,7 @@ function TaskProvider({ children }: TaskProviderProps) {
     tasks: [],
     loading: true,
     errors: null,
+    searchResults: null,
   });
 
   // Actions
@@ -75,7 +82,25 @@ function TaskProvider({ children }: TaskProviderProps) {
     }
   }
 
-  const value = { state, dispatch, addErrorToState, getTasks };
+  async function searchTasks({
+    search,
+    status,
+  }: {
+    search: string;
+    status: string;
+  }) {
+    try {
+      const { data } = await axios.get<TaskType[]>(
+        `/tasks?search=${search}${status && `&status=${status}`}`
+      );
+      dispatch({ type: 'SET_SEARCH_RESULTS', payload: data });
+    } catch (err) {
+      // TODO: add error to state
+      dispatch({ type: 'REMOVE_SEARCH_RESULTS' });
+    }
+  }
+
+  const value = { state, dispatch, addErrorToState, getTasks, searchTasks };
   return (
     <TaskStateContext.Provider value={value}>
       {children}
