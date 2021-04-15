@@ -41,6 +41,7 @@ type ContextType = {
   addErrorToState: (errors: string[]) => void;
   getTasks: () => Promise<void>;
   searchTasks: (data: { search: string; status: string }) => Promise<void>;
+  createTask: (data: { title: string; description: string }) => Promise<void>;
 };
 
 const TaskStateContext = createContext<ContextType | undefined>(undefined);
@@ -49,6 +50,9 @@ const reducer = (state: State, { type, payload }: Action) => {
   switch (type) {
     case 'GET_TASKS': {
       return { ...state, loading: false, tasks: payload };
+    }
+    case 'CREATE_TASK': {
+      return { ...state, loading: false, tasks: [...state.tasks, payload] };
     }
     case 'SET_SEARCH_RESULTS': {
       return { ...state, loading: false, searchResults: payload };
@@ -100,7 +104,23 @@ function TaskProvider({ children }: TaskProviderProps) {
     }
   }
 
-  const value = { state, dispatch, addErrorToState, getTasks, searchTasks };
+  async function createTask(data: { title: string; description: string }) {
+    try {
+      const { data: payload } = await axios.post<TaskType>('/tasks', data);
+      dispatch({ type: 'CREATE_TASK', payload });
+    } catch (err) {
+      //
+    }
+  }
+
+  const value = {
+    state,
+    dispatch,
+    addErrorToState,
+    getTasks,
+    searchTasks,
+    createTask,
+  };
   return (
     <TaskStateContext.Provider value={value}>
       {children}

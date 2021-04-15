@@ -1,6 +1,6 @@
 import { Avatar } from '@chakra-ui/avatar';
 import { AddIcon, SearchIcon } from '@chakra-ui/icons';
-import { Center, Flex, Heading, Stack } from '@chakra-ui/layout';
+import { Flex, Heading, Stack } from '@chakra-ui/layout';
 import {
   Box,
   Button,
@@ -39,6 +39,7 @@ const Home = () => {
     getTasks,
     searchTasks,
     dispatch,
+    createTask,
   } = useTask();
 
   useEffect(() => {
@@ -49,6 +50,13 @@ const Home = () => {
     e.preventDefault();
     if (!search) dispatch({ type: 'REMOVE_SEARCH_RESULTS' });
     if (search) searchTasks({ search, status: filter });
+  };
+
+  const onCreateTask = () => {
+    createTask({ title, description });
+    setDescription('');
+    setTitle('');
+    onClose();
   };
 
   const Head = () => (
@@ -117,7 +125,7 @@ const Home = () => {
         </Box>
       </Collapse>
       <TasksList tasks={searchResults ?? tasks} />
-      <Center m="auto 1rem 1rem auto">
+      <Box pos="fixed" bottom={3} right={3}>
         <IconButton
           onClick={onOpen}
           variant="solid"
@@ -127,7 +135,7 @@ const Home = () => {
           size="lg"
           icon={<AddIcon />}
         />
-      </Center>
+      </Box>
       <Modal size="sm" isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent bg="#262528">
@@ -155,7 +163,7 @@ const Home = () => {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3}>
+            <Button colorScheme="blue" onClick={onCreateTask} mr={3}>
               Save
             </Button>
             <Button onClick={onClose}>Cancel</Button>
