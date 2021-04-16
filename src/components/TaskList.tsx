@@ -30,14 +30,16 @@ const TasksList: React.FC<Props> = ({ tasks, loading }) => {
 
       <Box>
         {!loading ? (
-          tasks.map((task) => (
-            <TaskItem
-              key={task.id}
-              id={task.id}
-              title={task.title}
-              status={task.status}
-            />
-          ))
+          tasks
+            .filter((task) => task.status !== 'DONE')
+            .map((task) => (
+              <TaskItem
+                key={task.id}
+                id={task.id}
+                title={task.title}
+                status={task.status}
+              />
+            ))
         ) : (
           <Stack mx={3}>
             {Array.from({ length: 8 }).map(() => (

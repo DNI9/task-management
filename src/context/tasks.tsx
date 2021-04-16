@@ -53,7 +53,7 @@ const reducer = (state: State, { type, payload }: Action) => {
       return { ...state, loading: false, tasks: payload };
     }
     case 'CREATE_TASK': {
-      return { ...state, loading: false, tasks: [...state.tasks, payload] };
+      return { ...state, loading: false, tasks: [payload, ...state.tasks] };
     }
     case 'SET_SEARCH_RESULTS': {
       return { ...state, loading: false, searchResults: payload };
