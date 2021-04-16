@@ -1,5 +1,10 @@
 import { Avatar } from '@chakra-ui/avatar';
-import { AddIcon, CheckIcon, SearchIcon } from '@chakra-ui/icons';
+import {
+  AddIcon,
+  CheckIcon,
+  SearchIcon,
+  SmallCloseIcon,
+} from '@chakra-ui/icons';
 import { Flex, Heading, Stack } from '@chakra-ui/layout';
 import {
   Box,
@@ -99,7 +104,7 @@ const Home = () => {
         mr={3}
         rounded="full"
         aria-label="Search tasks"
-        icon={<SearchIcon />}
+        icon={!openSearchBar ? <SearchIcon /> : <SmallCloseIcon />}
       />
       <Menu isLazy offset={[0, -50]}>
         <MenuButton cursor="pointer" as={Avatar} aria-label="Menu">
