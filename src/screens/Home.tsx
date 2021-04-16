@@ -119,7 +119,10 @@ const Home = () => {
         </Box>
       </Collapse>
 
-      <TasksList loading={loading} tasks={searchResults ?? tasks} />
+      <TasksList
+        loading={loading}
+        tasks={searchResults ?? tasks.filter((task) => task.status !== 'DONE')}
+      />
 
       <Box pos="fixed" bottom={3} right={3}>
         <IconButton
