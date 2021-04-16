@@ -26,6 +26,7 @@ import { Link, useHistory } from 'react-router-dom';
 import TasksList from '../components/TaskList';
 import { useAuth } from '../context/auth';
 import { useTask } from '../context/tasks';
+import { greetUser } from '../utils';
 
 const Home = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -72,10 +73,10 @@ const Home = () => {
     <Flex mx={3} justify="space-between" alignItems="center">
       <Stack spacing={0}>
         <Heading fontWeight="normal" as="h3" size="md">
-          Hello, dni9
+          Hello, {me?.username ?? 'User'}
         </Heading>
         <Heading as="h1" size="lg">
-          Good Morning
+          {greetUser()}
         </Heading>
       </Stack>
       <IconButton
@@ -91,7 +92,7 @@ const Home = () => {
         icon={<SearchIcon />}
       />
       <Link to="/login">
-        <Avatar name="DNI9" src="" />
+        <Avatar name={me?.username ?? 'User'} src="" />
       </Link>
     </Flex>
   );
