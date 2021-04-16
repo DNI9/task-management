@@ -21,9 +21,11 @@ const TaskItem: React.FC<Props> = ({ id, status, title }) => {
   const { updateTaskStatus } = useTask();
 
   const dragAction = (_: any, { offset }: PanInfo) => {
-    if (offset.x < 0) {
-      if (status !== 'IN_PROGRESS') updateTaskStatus(id, 'IN_PROGRESS');
-    } else if (status !== 'DONE') updateTaskStatus(id, 'DONE');
+    if (Math.abs(offset.x) > 200) {
+      if (offset.x < 0) {
+        if (status !== 'IN_PROGRESS') updateTaskStatus(id, 'IN_PROGRESS');
+      } else if (status !== 'DONE') updateTaskStatus(id, 'DONE');
+    }
   };
 
   return (
