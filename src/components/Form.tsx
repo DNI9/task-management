@@ -32,6 +32,12 @@ const Form: React.FC<Props> = ({ event }) => {
   const [password, setPassword] = useState('');
   const handleClick = () => setShow(!show);
 
+  const {
+    state: { me },
+  } = useAuth();
+
+  if (me) history.push('/');
+
   const submitHandler = async (e: FormEvent) => {
     e.preventDefault();
     try {
@@ -44,7 +50,7 @@ const Form: React.FC<Props> = ({ event }) => {
           status: 'success',
           title: 'Login successful',
         });
-        history.push('/');
+        window.location.reload();
       } else {
         dispatch({ type: 'SET_LOADING' });
         const res = await axios.post('/auth/signup', { username, password });

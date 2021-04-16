@@ -152,7 +152,7 @@ function useTask() {
   const context = useContext(TaskStateContext);
 
   if (context === undefined) {
-    throw new Error('useCount must be used within a CountProvider');
+    throw new Error('useTask must be used within a TaskProvider');
   }
 
   return context;

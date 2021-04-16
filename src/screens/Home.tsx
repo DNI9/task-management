@@ -22,12 +22,15 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import React, { FormEvent, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import TasksList from '../components/TaskList';
+import { useAuth } from '../context/auth';
 import { useTask } from '../context/tasks';
 
 const Home = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { push } = useHistory();
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [openSearchBar, setOpenSearchBar] = useState(false);
@@ -42,7 +45,13 @@ const Home = () => {
     createTask,
   } = useTask();
 
+  const {
+    state: { me },
+  } = useAuth();
+
   useEffect(() => {
+    if (!me) push('/login');
+
     getTasks();
   }, []);
 
