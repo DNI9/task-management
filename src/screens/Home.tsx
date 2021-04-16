@@ -11,6 +11,10 @@ import {
   Input,
   InputGroup,
   InputRightElement,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -22,7 +26,9 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import React, { FormEvent, useEffect, useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { HiOutlineLogout } from 'react-icons/hi';
+import { RiSettings4Line } from 'react-icons/ri';
+import { useHistory } from 'react-router-dom';
 import TasksList from '../components/TaskList';
 import { useAuth } from '../context/auth';
 import { useTask } from '../context/tasks';
@@ -52,9 +58,13 @@ const Home = () => {
 
   useEffect(() => {
     if (!me) push('/login');
-
     getTasks();
   }, []);
+
+  const logout = () => {
+    localStorage.removeItem('accessToken');
+    window.location.reload();
+  };
 
   const onSearch = (e: FormEvent) => {
     e.preventDefault();
@@ -91,9 +101,17 @@ const Home = () => {
         aria-label="Search tasks"
         icon={<SearchIcon />}
       />
-      <Link to="/login">
-        <Avatar name={me?.username ?? 'User'} src="" />
-      </Link>
+      <Menu isLazy offset={[0, -50]}>
+        <MenuButton as={Avatar} aria-label="Menu">
+          <Avatar name={me?.username ?? 'User'} src="" />
+        </MenuButton>
+        <MenuList bg="#262528">
+          <MenuItem icon={<RiSettings4Line size={20} />}>Settings</MenuItem>
+          <MenuItem onClick={logout} icon={<HiOutlineLogout size={20} />}>
+            Logout
+          </MenuItem>
+        </MenuList>
+      </Menu>
     </Flex>
   );
 
