@@ -20,12 +20,10 @@ export const MotionFlex: React.FC<MotionBoxProps> = motion(chakra.div);
 const TaskItem: React.FC<Props> = ({ id, status, title }) => {
   const { updateTaskStatus } = useTask();
 
-  const dragAction = (_, { offset }: PanInfo) => {
+  const dragAction = (_: any, { offset }: PanInfo) => {
     if (offset.x < 0) {
-      updateTaskStatus(id, 'IN_PROGRESS');
-    } else {
-      updateTaskStatus(id, 'DONE');
-    }
+      if (status !== 'IN_PROGRESS') updateTaskStatus(id, 'IN_PROGRESS');
+    } else if (status !== 'DONE') updateTaskStatus(id, 'DONE');
   };
 
   return (
