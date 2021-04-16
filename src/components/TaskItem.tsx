@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react/prop-types */
-import { Badge, Divider, Heading, HStack, Text } from '@chakra-ui/layout';
+import { Badge, Divider, Flex, Heading, HStack, Text } from '@chakra-ui/layout';
 import {
   chakra,
   Drawer,
@@ -10,6 +10,7 @@ import {
   DrawerOverlay,
   HTMLChakraProps,
   Icon,
+  IconButton,
   Radio,
   RadioGroup,
   useDisclosure,
@@ -17,6 +18,7 @@ import {
 import { HTMLMotionProps, motion, PanInfo } from 'framer-motion';
 import { debounce } from 'lodash';
 import React, { useCallback, useState } from 'react';
+import { AiFillDelete } from 'react-icons/ai';
 import { IoCheckmarkCircleSharp, IoSyncCircleSharp } from 'react-icons/io5';
 import { RiRecordCircleFill } from 'react-icons/ri';
 import { useTask } from '../context/tasks';
@@ -36,7 +38,7 @@ export const MotionFlex: React.FC<MotionBoxProps> = motion(chakra.div);
 const TaskItem: React.FC<Props> = ({ id, status, title, description }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [, setFilter] = useState<TaskStatus>(status);
-  const { updateTaskStatus } = useTask();
+  const { updateTaskStatus, deleteTask } = useTask();
 
   const debouncedUpdateTaskStatus = useCallback(
     debounce((f) => updateTaskStatus(id, f), 500),
@@ -99,12 +101,22 @@ const TaskItem: React.FC<Props> = ({ id, status, title, description }) => {
         <DrawerOverlay>
           <DrawerContent bgGradient="linear(to-bl, #262528, #201F21)">
             <DrawerHeader>
-              <HStack justify="space-between">
-                <Heading as="h1" size="lg">
+              <Flex w="full" align="center">
+                <Heading mr={2} isTruncated maxW="65%" as="h1" size="lg">
                   {title}
                 </Heading>
                 <StatusTag />
-              </HStack>
+
+                <IconButton
+                  onClick={() => deleteTask(id)}
+                  ml="auto"
+                  rounded="full"
+                  aria-label="Delete this task"
+                  title="Delete this task"
+                  color="red.300"
+                  icon={<AiFillDelete size={20} />}
+                />
+              </Flex>
               <Divider mt={2} />
             </DrawerHeader>
             <DrawerBody>

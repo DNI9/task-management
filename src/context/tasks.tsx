@@ -43,6 +43,7 @@ type ContextType = {
   searchTasks: (data: { search: string; status: string }) => Promise<void>;
   createTask: (data: { title: string; description: string }) => Promise<void>;
   updateTaskStatus: (id: number, status: TaskStatus) => Promise<void>;
+  deleteTask: (id: number) => Promise<void>;
 };
 
 const TaskStateContext = createContext<ContextType | undefined>(undefined);
@@ -54,6 +55,13 @@ const reducer = (state: State, { type, payload }: Action) => {
     }
     case 'CREATE_TASK': {
       return { ...state, loading: false, tasks: [payload, ...state.tasks] };
+    }
+    case 'DELETE_TASK': {
+      return {
+        ...state,
+        loading: false,
+        tasks: state.tasks.filter((task) => task.id !== payload),
+      };
     }
     case 'SET_SEARCH_RESULTS': {
       return { ...state, loading: false, searchResults: payload };
@@ -123,6 +131,15 @@ function TaskProvider({ children }: TaskProviderProps) {
     }
   }
 
+  async function deleteTask(id: number) {
+    try {
+      await axios.delete(`/tasks/${id}`);
+      dispatch({ type: 'DELETE_TASK', payload: id });
+    } catch (error) {
+      //
+    }
+  }
+
   async function updateTaskStatus(id: number, status: TaskStatus) {
     try {
       const { data } = await axios.patch(`/tasks/${id}/status`, { status });
@@ -140,6 +157,7 @@ function TaskProvider({ children }: TaskProviderProps) {
     searchTasks,
     createTask,
     updateTaskStatus,
+    deleteTask,
   };
   return (
     <TaskStateContext.Provider value={value}>
