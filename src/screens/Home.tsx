@@ -1,5 +1,5 @@
 import { Avatar } from '@chakra-ui/avatar';
-import { AddIcon, SearchIcon } from '@chakra-ui/icons';
+import { AddIcon, CheckIcon, SearchIcon } from '@chakra-ui/icons';
 import { Flex, Heading, Stack } from '@chakra-ui/layout';
 import {
   Box,
@@ -102,11 +102,12 @@ const Home = () => {
         icon={<SearchIcon />}
       />
       <Menu isLazy offset={[0, -50]}>
-        <MenuButton as={Avatar} aria-label="Menu">
+        <MenuButton cursor="pointer" as={Avatar} aria-label="Menu">
           <Avatar name={me?.username ?? 'User'} src="" />
         </MenuButton>
         <MenuList bg="#262528">
           <MenuItem icon={<RiSettings4Line size={20} />}>Settings</MenuItem>
+          <MenuItem icon={<CheckIcon size={20} />}>Completed</MenuItem>
           <MenuItem onClick={logout} icon={<HiOutlineLogout size={20} />}>
             Logout
           </MenuItem>
