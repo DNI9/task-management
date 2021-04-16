@@ -100,11 +100,12 @@ const Home = () => {
   return (
     <Flex minH="100vh" flexDir="column" pt={5}>
       <Head />
-      <Collapse in={openSearchBar} animateOpacity>
+      <Collapse unmountOnExit in={openSearchBar} animateOpacity>
         <Box mx={3} mt="4" rounded="md" shadow="md">
           <form onSubmit={onSearch}>
             <InputGroup size="md">
               <Input
+                autoFocus
                 onChange={(e) => setSearch(e.target.value)}
                 value={search}
                 pr="4.5rem"
