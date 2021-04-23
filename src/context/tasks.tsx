@@ -119,12 +119,10 @@ function TaskProvider({ children }: TaskProviderProps) {
           `/tasks?search=${search}&status=${status}`
         );
         searchResults = data;
-      }
-      if (search) {
+      } else if (search) {
         const { data } = await axios.get<TaskType[]>(`/tasks?search=${search}`);
         searchResults = data;
-      }
-      if (status) {
+      } else if (status) {
         const { data } = await axios.get<TaskType[]>(`/tasks?status=${status}`);
         searchResults = data;
       }
