@@ -17,7 +17,7 @@ import {
 } from '@chakra-ui/react';
 import { HTMLMotionProps, motion, PanInfo } from 'framer-motion';
 import { debounce } from 'lodash';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { AiFillDelete } from 'react-icons/ai';
 import { IoCheckmarkCircleSharp, IoSyncCircleSharp } from 'react-icons/io5';
 import { RiRecordCircleFill } from 'react-icons/ri';
@@ -39,13 +39,25 @@ const TaskItem: React.FC<Props> = ({ id, status, title, description }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [, setFilter] = useState<TaskStatus>(status);
   const { updateTaskStatus, deleteTask } = useTask();
+  const [dragTaskStatus, setDragTaskStatus] = useState<
+    'DONE' | 'IN_PROGRESS'
+  >();
 
   const debouncedUpdateTaskStatus = useCallback(
     debounce((f) => updateTaskStatus(id, f), 500),
     []
   );
 
-  const dragAction = (_: any, { offset }: PanInfo) => {
+  // fixes error of memory leak
+  useEffect(() => () => setDragTaskStatus(undefined), []);
+
+  // show indicator
+  const onDragStart = (_: unknown, { offset }: PanInfo) => {
+    if (offset.x < 0) setDragTaskStatus('IN_PROGRESS');
+    else setDragTaskStatus('DONE');
+  };
+
+  const dragAction = (_: unknown, { offset }: PanInfo) => {
     if (Math.abs(offset.x) > 200) {
       if (offset.x < 0) {
         if (status !== 'IN_PROGRESS') updateTaskStatus(id, 'IN_PROGRESS');
@@ -73,8 +85,16 @@ const TaskItem: React.FC<Props> = ({ id, status, title, description }) => {
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
       onDragEnd={dragAction}
+      onDragStart={onDragStart}
+      onDragTransitionEnd={() => setDragTaskStatus(undefined)}
       dragTransition={{ bounceStiffness: 300, bounceDamping: 15 }}
-      bgGradient="linear-gradient(to-r, #262529, #353339)"
+      bgGradient={
+        !dragTaskStatus
+          ? 'linear-gradient(to-r, #262529, #353339)'
+          : dragTaskStatus === 'DONE'
+          ? 'linear-gradient(to-r, green.500, #353339)'
+          : 'linear-gradient(to-l, yellow.500, #353339)'
+      }
       justifyContent="space-between"
       alignItems="center"
       display="flex"
@@ -84,15 +104,18 @@ const TaskItem: React.FC<Props> = ({ id, status, title, description }) => {
       mx={3}
       cursor="pointer"
       onDoubleClick={onOpen}
+      pos="relative"
     >
       <HStack maxW="67%">
-        {status === 'OPEN' ? (
-          <Icon w={8} h={6} color="blue.300" as={RiRecordCircleFill} />
-        ) : status === 'DONE' ? (
-          <Icon w={8} h={6} color="green.300" as={IoCheckmarkCircleSharp} />
-        ) : (
-          <Icon w={8} h={6} color="yellow.300" as={IoSyncCircleSharp} />
-        )}
+        <>
+          {status === 'OPEN' ? (
+            <Icon w={8} h={6} color="blue.300" as={RiRecordCircleFill} />
+          ) : status === 'DONE' ? (
+            <Icon w={8} h={6} color="green.300" as={IoCheckmarkCircleSharp} />
+          ) : (
+            <Icon w={8} h={6} color="yellow.300" as={IoSyncCircleSharp} />
+          )}
+        </>
         <Text isTruncated>{title}</Text>
       </HStack>
       <StatusTag />
