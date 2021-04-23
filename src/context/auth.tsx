@@ -77,11 +77,6 @@ const reducer = (state: State, { type, payload }: Action) => {
   }
 };
 
-type FormData = {
-  username: string;
-  password: string;
-};
-
 function AuthProvider({ children }: AuthProviderProps) {
   const [state, dispatch] = useReducer(reducer, {
     isAuthenticated: false,
