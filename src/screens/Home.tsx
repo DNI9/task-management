@@ -73,8 +73,7 @@ const Home = () => {
 
   const onSearch = (e: FormEvent) => {
     e.preventDefault();
-    if (!search) dispatch({ type: 'REMOVE_SEARCH_RESULTS' });
-    if (search) searchTasks({ search, status: filter });
+    searchTasks({ search, status: filter });
   };
 
   const onCreateTask = () => {

@@ -112,10 +112,23 @@ function TaskProvider({ children }: TaskProviderProps) {
     status: string;
   }) {
     try {
-      const { data } = await axios.get<TaskType[]>(
-        `/tasks?search=${search}${status && `&status=${status}`}`
-      );
-      dispatch({ type: 'SET_SEARCH_RESULTS', payload: data });
+      let searchResults: TaskType[] | null = null;
+
+      if (search && status) {
+        const { data } = await axios.get<TaskType[]>(
+          `/tasks?search=${search}&status=${status}`
+        );
+        searchResults = data;
+      }
+      if (search) {
+        const { data } = await axios.get<TaskType[]>(`/tasks?search=${search}`);
+        searchResults = data;
+      }
+      if (status) {
+        const { data } = await axios.get<TaskType[]>(`/tasks?status=${status}`);
+        searchResults = data;
+      }
+      dispatch({ type: 'SET_SEARCH_RESULTS', payload: searchResults });
     } catch (err) {
       // TODO: add error to state
       dispatch({ type: 'REMOVE_SEARCH_RESULTS' });
