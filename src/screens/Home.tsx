@@ -1,10 +1,5 @@
 import { Avatar } from '@chakra-ui/avatar';
-import {
-  AddIcon,
-  CheckIcon,
-  SearchIcon,
-  SmallCloseIcon,
-} from '@chakra-ui/icons';
+import { AddIcon, SearchIcon, SmallCloseIcon } from '@chakra-ui/icons';
 import { Flex, Heading, Stack } from '@chakra-ui/layout';
 import {
   Box,
@@ -111,7 +106,6 @@ const Home = () => {
         </MenuButton>
         <MenuList bg="#262528">
           <MenuItem icon={<RiSettings4Line size={20} />}>Settings</MenuItem>
-          <MenuItem icon={<CheckIcon size={20} />}>Completed</MenuItem>
           <MenuItem onClick={logout} icon={<HiOutlineLogout size={20} />}>
             Logout
           </MenuItem>
