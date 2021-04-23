@@ -93,6 +93,7 @@ const Home = () => {
           setOpenSearchBar(!openSearchBar);
           dispatch({ type: 'REMOVE_SEARCH_RESULTS' });
           setSearch('');
+          setFilter('');
         }}
         ml="auto"
         mr={3}
